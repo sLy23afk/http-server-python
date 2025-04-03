@@ -8,14 +8,13 @@ def main():
     PORT = 4221
  
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    server_socket.bind((HOST, PORT))
     server_socket.listen(5)
     print(f'Server is running on {HOST}:{PORT}')
     
     while True:
         client_socket, client_address = server_socket.accept()
         print(f'New connection from {client_address}')
-        request = client_socket.recy(1024)
+        request = client_socket.recv(1024)
         print(f"Received request: {request.decode()}")
         
         response = "HTTP/1.1 200 OK\r\n\r\n"
