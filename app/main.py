@@ -19,7 +19,6 @@ def main():
         request_line = lines[0]
         method, path, _ = request_line.split()
         
-        response = ''
         
         if path.startswith("/echo/"):
             echo_text = path[len("/echo/"):]  # Get the part after "/echo/"
