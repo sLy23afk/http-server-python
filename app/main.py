@@ -19,10 +19,8 @@ def main():
         request_line = lines[0]
         method, path, _ = request_line.split()
         
-        if request_line == "/":
-          response = "HTTP/1.1 200 OK\r\n\r\n"
-          
-          
+        response = ''
+                
         if path.startswith("/echo/"):
             echo_text = path[len("/echo/"):]  # Get the part after "/echo/"
             content_length = len(echo_text)
@@ -51,6 +49,9 @@ def main():
                 f"{user_agent}"
             )
         
+        elif request_line == "/":
+          response = "HTTP/1.1 200 OK\r\n\r\n"
+                  
         else:
             response = "HTTP/1.1 404 Not Found\r\n\r\n"
 
