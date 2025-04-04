@@ -14,13 +14,13 @@ def main():
         print(f'New connection from {client_address}')
         request = client_socket.recv(1024).decode()
         print(f"Received request: \n {request}")
-        response = "HTTP/1.1 200 OK\r\n\r\n"
         
         lines = request.split("\r\n")
         request_line = lines[0]
         method, path, _ = request_line.split()
         
-        
+        if path == "/":
+          response = "HTTP/1.1 200 OK\r\n\r\n"
         if path.startswith("/echo/"):
             echo_text = path[len("/echo/"):]  # Get the part after "/echo/"
             content_length = len(echo_text)
