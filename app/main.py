@@ -19,8 +19,10 @@ def main():
         request_line = lines[0]
         method, path, _ = request_line.split()
         
-        if path == "/":
+        if request_line == "/":
           response = "HTTP/1.1 200 OK\r\n\r\n"
+          
+          
         if path.startswith("/echo/"):
             echo_text = path[len("/echo/"):]  # Get the part after "/echo/"
             content_length = len(echo_text)
