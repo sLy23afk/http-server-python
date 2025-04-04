@@ -7,7 +7,7 @@ def main():
   
   
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    server_socket.listen(3)
+    server_socket.listen()
     
     while True:
         client_socket, client_address = server_socket.accept()
