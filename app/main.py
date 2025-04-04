@@ -23,6 +23,16 @@ def main():
             
             if path == '/':
                 response = "HTTP/1.1 200 OK\r\n\r\n"
+            elif path.startswith('/echo/'):
+                echo_string = path[len('/echo/'):]
+                content_length = len(echo_string)
+                response = ( 
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Type: text/plain\r\n"
+                    f"Content-Length: {content_length}\r\n"
+                    "\r\n"
+                    f"{echo_string}"
+                    )
             else:
                 response = "HTTP/1.1 404 Not Found\r\n\r\n"
             
