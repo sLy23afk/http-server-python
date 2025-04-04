@@ -7,7 +7,7 @@ def main():
   
   
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    server_socket.listen(5)
+    server_socket.listen(3)
     
     while True:
         client_socket, client_address = server_socket.accept()
@@ -49,7 +49,7 @@ def main():
                 f"{user_agent}"
             )
         
-        elif path != "/user-agent" and path != "/echo/" and path == '/':
+        elif path != "/user-agent" and path != "/ecsho/" and path == '/':
           response = "HTTP/1.1 200 OK\r\n\r\n"
                   
         else:
