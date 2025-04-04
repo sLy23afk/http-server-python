@@ -49,7 +49,7 @@ def main():
                 f"{user_agent}"
             )
         
-        elif request_line == "/":
+        elif path != "/user-agent" and path != "/echo/" and path == '/':
           response = "HTTP/1.1 200 OK\r\n\r\n"
                   
         else:
