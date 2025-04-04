@@ -14,6 +14,7 @@ def main():
         print(f'New connection from {client_address}')
         request = client_socket.recv(1024).decode()
         print(f"Received request: \n {request}")
+        response = "HTTP/1.1 200 OK\r\n\r\n"
         
         lines = request.split("\r\n")
         request_line = lines[0]
@@ -47,8 +48,6 @@ def main():
                 "\r\n"
                 f"{user_agent}"
             )
-        elif path == 2:
-            response = "HTTP/1.1 200 OK\r\n\r\n"
         
         else:
             response = "HTTP/1.1 404 Not Found\r\n\r\n"
