@@ -15,28 +15,43 @@ def main():
         request = client_socket.recv(1024).decode()
         print(f"Received request: \n {request}")
         
-        request_line = request.split("\r\n")[0]
-        parts = request_line.split(" ")
+        lines = request.split("\r\n")
+        request_line = lines[0]
+        method, path, _ = request_line.split()
         
-        if len(parts) >= 2:
-            path = parts[1]
+        response = ''
+        
+        if path.startswith("/echo/"):
+            echo_text = path[len("/echo/"):]  # Get the part after "/echo/"
+            content_length = len(echo_text)
+
+            response = (
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Type: text/plain\r\n"
+                f"Content-Length: {content_length}\r\n"
+                "\r\n"
+                f"{echo_text}"
+                 )
             
-            if path == '/':
-                response = "HTTP/1.1 200 OK\r\n\r\n"
-            elif path.startswith('/echo/'):
-                echo_string = path[len('/echo/'):]
-                content_length = len(echo_string)
-                response = ( 
-                    "HTTP/1.1 200 OK\r\n"
-                    "Content-Type: text/plain\r\n"
-                    f"Content-Length: {content_length}\r\n"
-                    "\r\n"
-                    f"{echo_string}"
-                    )
-            else:
-                response = "HTTP/1.1 404 Not Found\r\n\r\n"
-            
-            client_socket.sendall(response.encode())
+        elif path == "/user-agent":
+            user_agent = ""
+            for line in lines:
+                if line.lower().startswith("user-agent:"):
+                    user_agent = line[len("User-Agent:"):].strip()
+                    break
+
+            content_length = len(user_agent)
+            response = (
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Type: text/plain\r\n"
+                f"Content-Length: {content_length}\r\n"
+                "\r\n"
+                f"{user_agent}"
+            )
+        else:
+            response = "HTTP/1.1 404 Not Found\r\n\r\n"
+
+        client_socket.sendall(response.encode())
         client_socket.close()
         
 
