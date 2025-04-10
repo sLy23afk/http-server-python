@@ -2,6 +2,7 @@ import socket  # noqa: F401
 import threading
 import os
 import sys
+import argparse
 
 directory = None
 
@@ -55,26 +56,27 @@ def handle_client(contact):
         
     elif path.startswith("/files/"):
         filename = path[len("/files/"):]
-        if directory:  # global variable set from --directory
-            file_path = os.path.join(directory, filename)
-            if os.path.isfile(file_path):
-                with open(file_path, "rb") as f:
-                    file_content = f.read()
-                content_length = len(file_content)
-                response_headers = (
-                    "HTTP/1.1 200 OK\r\n"
-                    "Content-Type: application/octet-stream\r\n"
-                    f"Content-Length: {content_length}\r\n"
-                    "\r\n"
-                )
-                contact.sendall(response_headers.encode() + file_content)
-                contact.close()
-                return
-            else:
-                response = "HTTP/1.1 404 Not Found\r\n\r\n"
+        file_path = os.path.join(directory, filename)
+
+        if os.path.isfile(file_path):
+            with open(file_path, "rb") as f:
+                content = f.read()
+
+            response = (
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Type: application/octet-stream\r\n"
+                f"Content-Length: {len(content)}\r\n"
+                "\r\n"
+            ).encode() + content
+        else:
+            response = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
+
+        contact.sendall(response)
+        contact.close()
+        return  # Exit early so we don’t run the rest
                 
                 
-    elif path != "/user-agent" and path != "/echo/" and path == '/':
+    if path != "/user-agent" and path != "/echo/" and path == '/':
         response = "HTTP/1.1 200 OK\r\n\r\n"
             
     else:
@@ -86,11 +88,17 @@ def handle_client(contact):
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--directory", required=True)
+    args = parser.parse_args()
+    directory = args.directory
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     server_socket.listen(10)
 
     while True:
+        contact, addr = server_socket.accept()
         client_socket, client_address = server_socket.accept()
         print(f'New connection from {client_address}')
         thread = threading.Thread(target=handle_client, args=(client_socket,))
