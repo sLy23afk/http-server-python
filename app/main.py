@@ -12,7 +12,7 @@ if "-- directory" in sys.argv:
     if dir_index < len(sys.argv):
         directory = sys.argv[dir_index]
         
-def handle_client(contact):
+def handle_client(contact, directory):
     request = contact.recv(1024).decode()
     print(f"Received request:\n{request}")
     
@@ -86,6 +86,9 @@ def handle_client(contact):
     contact.close()    
 
 def main():
+    import argparse
+    import os
+
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
     
@@ -99,9 +102,8 @@ def main():
 
     while True:
         contact, addr = server_socket.accept()
-        client_socket, client_address = server_socket.accept()
-        print(f'New connection from {client_address}')
-        thread = threading.Thread(target=handle_client, args=(client_socket,))
+        print(f'New connection from {addr}')
+        thread = threading.Thread(target=handle_client, args=(contact, directory))
         thread.start()
 
 if __name__ == "__main__":
