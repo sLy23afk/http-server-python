@@ -1,6 +1,16 @@
 import socket  # noqa: F401
 import threading
+import os
+import sys
 
+directory = None
+
+
+if "-- directory" in sys.argv:
+    dir_index = sys.argv.index("--directory") + 1
+    if dir_index < len(sys.argv):
+        directory = sys.argv[dir_index]
+        
 def handle_client(contact):
     request = contact.recv(1024).decode()
     print(f"Received request:\n{request}")
@@ -42,10 +52,31 @@ def handle_client(contact):
             "\r\n"
             f"{user_agent}"
         )
-
+        
+    elif path.startswith("/files/"):
+        filename = path[len("/files/"):]
+        if directory:  # global variable set from --directory
+            file_path = os.path.join(directory, filename)
+            if os.path.isfile(file_path):
+                with open(file_path, "rb") as f:
+                    file_content = f.read()
+                content_length = len(file_content)
+                response_headers = (
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Type: application/octet-stream\r\n"
+                    f"Content-Length: {content_length}\r\n"
+                    "\r\n"
+                )
+                contact.sendall(response_headers.encode() + file_content)
+                contact.close()
+                return
+            else:
+                response = "HTTP/1.1 404 Not Found\r\n\r\n"
+                
+                
     elif path != "/user-agent" and path != "/echo/" and path == '/':
         response = "HTTP/1.1 200 OK\r\n\r\n"
-
+            
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
 
