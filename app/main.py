@@ -88,13 +88,15 @@ def handle_client(contact, directory):
 def main():
     import argparse
     import os
-
+    global directory
+    
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--directory", required=True)
     args = parser.parse_args()
+    
     directory = args.directory
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
