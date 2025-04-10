@@ -1,6 +1,21 @@
 import socket  # noqa: F401
+import threading
 
-
+def handle_clients(client_socket):
+    request = client_socket.recv(1024).decode()
+    lines = request.split("\r\n")
+    request_line = lines[0]
+    method, path, _ = request_line.split()
+    
+    if path == "/":
+        response = "HTTP/1.1 200 OK\r\n\r\n"
+    else:
+        response = "HTTP/1.1 404 Not Found\r\n\r\n"
+    
+    client_socket.sendall(response.encode())
+    client_socket.close()
+    
+    
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
@@ -11,6 +26,8 @@ def main():
     
     while True:
         client_socket, client_address = server_socket.accept()
+        thread = threading.Thread(target=handle_clients, args=(client_socket,))
+        thread.start()
         print(f'New connection from {client_address}')
         request = client_socket.recv(1024).decode()
         print(f"Received request: \n {request}")
