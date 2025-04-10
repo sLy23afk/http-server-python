@@ -54,7 +54,7 @@ def handle_client(contact, directory):
             f"{user_agent}"
         )
         
-    elif path.startswith("/files/"):
+    elif path.startswith("/files/") and directory:
         filename = path[len("/files/"):]
         file_path = os.path.join(directory, filename)
 
@@ -94,13 +94,13 @@ def main():
     print("Logs from your program will appear here!")
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--directory", required=True)
+    parser.add_argument("--directory")
     args = parser.parse_args()
     
     directory = args.directory
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    server_socket.listen(10)
+    server_socket.listen()
 
     while True:
         contact, addr = server_socket.accept()
